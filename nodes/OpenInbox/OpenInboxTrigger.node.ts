@@ -5,7 +5,10 @@ import {
   INodeTypeDescription,
   IWebhookResponseData,
   IDataObject,
+  NodeOperationError,
 } from 'n8n-workflow';
+
+import { createHmac, timingSafeEqual } from 'crypto';
 
 import { openInboxApiRequest } from './GenericFunctions';
 
@@ -93,6 +96,14 @@ export class OpenInboxTrigger implements INodeType {
           },
         ],
         description: 'OpenInbox events that should activate this trigger',
+      },
+      {
+        displayName: 'Reject Invalid Signatures',
+        name: 'rejectInvalidSignatures',
+        type: 'boolean',
+        default: true,
+        description:
+          'Whether to drop deliveries whose HMAC signature does not match the stored webhook secret. When disabled, items still flow through but `__delivery.verified` will be false on tampered payloads.',
       },
     ],
   };
@@ -205,12 +216,84 @@ export class OpenInboxTrigger implements INodeType {
     const headers = this.getHeaderData() as IDataObject;
     const body = (req.body ?? {}) as IDataObject;
 
-    // Surface the OpenInbox-specific delivery headers in the output so
-    // downstream nodes can verify the HMAC signature against the secret.
+    const signatureHeader = headers[
+      OPENINBOX_WEBHOOK_SIGNATURE_HEADER.toLowerCase()
+    ] as string | undefined;
+    const eventHeader = headers[
+      OPENINBOX_WEBHOOK_EVENT_HEADER.toLowerCase()
+    ] as string | undefined;
+    const deliveryIdHeader = headers[
+      OPENINBOX_WEBHOOK_DELIVERY_HEADER.toLowerCase()
+    ] as string | undefined;
+
+    // Verify the HMAC signature against the raw request body. We MUST use
+    // the exact bytes OpenInbox signed — re-stringifying `req.body` is
+    // unreliable because key order, whitespace, and numeric coercion can
+    // diverge between the original JSON and Node's reserialised form.
+    const webhookData = this.getWorkflowStaticData('node');
+    const secret = webhookData.webhookSecret as string | undefined;
+    const rawBody = (req as unknown as { rawBody?: Buffer | string }).rawBody;
+
+    let verified = false;
+    let verifyError: string | undefined;
+
+    if (!signatureHeader) {
+      verifyError = 'missing signature header';
+    } else if (!secret) {
+      verifyError = 'webhook secret unavailable on this workflow';
+    } else if (!rawBody) {
+      verifyError = 'raw request body unavailable';
+    } else {
+      const parts = Object.fromEntries(
+        signatureHeader.split(',').map((p) => {
+          const idx = p.indexOf('=');
+          return idx === -1 ? [p, ''] : [p.slice(0, idx), p.slice(idx + 1)];
+        }),
+      ) as Record<string, string>;
+      const t = parts.t;
+      const v1 = parts.v1;
+      if (!t || !v1) {
+        verifyError = `malformed signature header: ${signatureHeader}`;
+      } else {
+        const rawBodyStr = Buffer.isBuffer(rawBody)
+          ? rawBody.toString('utf8')
+          : String(rawBody);
+        const expected = createHmac('sha256', secret)
+          .update(`${t}.${rawBodyStr}`)
+          .digest('hex');
+        try {
+          const a = Buffer.from(expected, 'hex');
+          const b = Buffer.from(v1, 'hex');
+          verified = a.length === b.length && timingSafeEqual(a, b);
+          if (!verified) {
+            verifyError = 'signature mismatch';
+          }
+        } catch {
+          verifyError = 'signature decode error';
+        }
+      }
+    }
+
+    const rejectInvalid = this.getNodeParameter(
+      'rejectInvalidSignatures',
+      true,
+    ) as boolean;
+
+    if (!verified && rejectInvalid) {
+      // Surface the failure in the n8n execution log without leaking the
+      // received signature back to the caller.
+      throw new NodeOperationError(
+        this.getNode(),
+        `OpenInbox webhook signature verification failed: ${verifyError ?? 'unknown'}`,
+      );
+    }
+
     const delivery = {
-      signature: headers[OPENINBOX_WEBHOOK_SIGNATURE_HEADER.toLowerCase()],
-      event: headers[OPENINBOX_WEBHOOK_EVENT_HEADER.toLowerCase()],
-      deliveryId: headers[OPENINBOX_WEBHOOK_DELIVERY_HEADER.toLowerCase()],
+      signature: signatureHeader,
+      event: eventHeader,
+      deliveryId: deliveryIdHeader,
+      verified,
+      verifyError,
     };
 
     return {
