@@ -8,6 +8,19 @@ This is an [n8n community node](https://docs.n8n.io/integrations/community-nodes
 
 > OpenInbox is **receive-only** disposable email infrastructure. You can create inboxes on demand, list received messages, and subscribe to webhook events such as `email.received`.
 
+## Example workflow
+
+The repo ships with a complete demo workflow that:
+
+1. Listens for OpenInbox webhook deliveries (`email.received`, `inbox.created`, `inbox.expired`).
+2. Verifies the `X-Webhook-Signature` HMAC.
+3. Routes by event with a Switch node.
+4. On `email.received`, pulls the full email body and extracts a 6-digit OTP.
+
+![OpenInbox n8n example workflow](https://raw.githubusercontent.com/openinbox-io/n8n-nodes-openinbox/main/docs/screenshots/n8n-workflow-example.png)
+
+Import [`examples/openinbox-full-demo.workflow.json`](./examples/openinbox-full-demo.workflow.json) into n8n to try it.
+
 ## Installation
 
 1. In n8n, go to **Settings → Community Nodes**.
