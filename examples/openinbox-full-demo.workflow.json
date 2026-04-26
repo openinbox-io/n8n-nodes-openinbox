@@ -1,0 +1,516 @@
+{
+  "name": "OpenInbox – Full Feature Demo",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "00000000-0000-0000-0000-000000000001",
+      "name": "Manual Trigger (CRUD demo)",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [-720, 200]
+    },
+    {
+      "parameters": {
+        "resource": "account",
+        "operation": "get"
+      },
+      "id": "00000000-0000-0000-0000-000000000002",
+      "name": "Account: Get",
+      "type": "n8n-nodes-openinbox.openInbox",
+      "typeVersion": 1,
+      "position": [-480, 200],
+      "credentials": {
+        "openInboxApi": {
+          "id": "REPLACE_WITH_YOUR_CRED_ID",
+          "name": "OpenInbox account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "inbox",
+        "operation": "create",
+        "prefix": "n8n-demo-{{$now.toMillis()}}"
+      },
+      "id": "00000000-0000-0000-0000-000000000003",
+      "name": "Inbox: Create",
+      "type": "n8n-nodes-openinbox.openInbox",
+      "typeVersion": 1,
+      "position": [-240, 200],
+      "credentials": {
+        "openInboxApi": {
+          "id": "REPLACE_WITH_YOUR_CRED_ID",
+          "name": "OpenInbox account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "inbox",
+        "operation": "get",
+        "inboxId": "={{ $json.id }}"
+      },
+      "id": "00000000-0000-0000-0000-000000000004",
+      "name": "Inbox: Get",
+      "type": "n8n-nodes-openinbox.openInbox",
+      "typeVersion": 1,
+      "position": [0, 200],
+      "credentials": {
+        "openInboxApi": {
+          "id": "REPLACE_WITH_YOUR_CRED_ID",
+          "name": "OpenInbox account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "inbox",
+        "operation": "getAll",
+        "returnAll": true
+      },
+      "id": "00000000-0000-0000-0000-000000000005",
+      "name": "Inbox: Get Many",
+      "type": "n8n-nodes-openinbox.openInbox",
+      "typeVersion": 1,
+      "position": [240, 200],
+      "credentials": {
+        "openInboxApi": {
+          "id": "REPLACE_WITH_YOUR_CRED_ID",
+          "name": "OpenInbox account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 60,
+        "unit": "seconds"
+      },
+      "id": "00000000-0000-0000-0000-000000000006",
+      "name": "Wait 60s (send email now)",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1,
+      "position": [240, 380],
+      "notes": "Send a test email to the inbox address from Inbox: Create while this is waiting."
+    },
+    {
+      "parameters": {
+        "resource": "email",
+        "operation": "getAll",
+        "inboxId": "={{ $('Inbox: Create').item.json.id }}",
+        "unreadOnly": false
+      },
+      "id": "00000000-0000-0000-0000-000000000007",
+      "name": "Email: Get Many",
+      "type": "n8n-nodes-openinbox.openInbox",
+      "typeVersion": 1,
+      "position": [480, 380],
+      "credentials": {
+        "openInboxApi": {
+          "id": "REPLACE_WITH_YOUR_CRED_ID",
+          "name": "OpenInbox account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "email",
+        "operation": "get",
+        "emailId": "={{ $json.id }}"
+      },
+      "id": "00000000-0000-0000-0000-000000000008",
+      "name": "Email: Get",
+      "type": "n8n-nodes-openinbox.openInbox",
+      "typeVersion": 1,
+      "position": [720, 380],
+      "credentials": {
+        "openInboxApi": {
+          "id": "REPLACE_WITH_YOUR_CRED_ID",
+          "name": "OpenInbox account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "email",
+        "operation": "delete",
+        "emailId": "={{ $json.id }}"
+      },
+      "id": "00000000-0000-0000-0000-000000000009",
+      "name": "Email: Delete",
+      "type": "n8n-nodes-openinbox.openInbox",
+      "typeVersion": 1,
+      "position": [960, 380],
+      "credentials": {
+        "openInboxApi": {
+          "id": "REPLACE_WITH_YOUR_CRED_ID",
+          "name": "OpenInbox account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "inbox",
+        "operation": "delete",
+        "inboxId": "={{ $('Inbox: Create').item.json.id }}"
+      },
+      "id": "00000000-0000-0000-0000-000000000010",
+      "name": "Inbox: Delete",
+      "type": "n8n-nodes-openinbox.openInbox",
+      "typeVersion": 1,
+      "position": [1200, 380],
+      "credentials": {
+        "openInboxApi": {
+          "id": "REPLACE_WITH_YOUR_CRED_ID",
+          "name": "OpenInbox account"
+        }
+      }
+    },
+
+    {
+      "parameters": {},
+      "id": "00000000-0000-0000-0000-000000000020",
+      "name": "Manual Trigger (Webhook demo)",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [-720, 720]
+    },
+    {
+      "parameters": {
+        "resource": "webhook",
+        "operation": "create",
+        "url": "https://webhook.site/REPLACE_WITH_YOUR_TEST_URL",
+        "events": ["email.received", "inbox.created", "inbox.expired"]
+      },
+      "id": "00000000-0000-0000-0000-000000000021",
+      "name": "Webhook: Create",
+      "type": "n8n-nodes-openinbox.openInbox",
+      "typeVersion": 1,
+      "position": [-480, 720],
+      "credentials": {
+        "openInboxApi": {
+          "id": "REPLACE_WITH_YOUR_CRED_ID",
+          "name": "OpenInbox account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "webhook",
+        "operation": "getAll",
+        "returnAll": true
+      },
+      "id": "00000000-0000-0000-0000-000000000022",
+      "name": "Webhook: Get Many",
+      "type": "n8n-nodes-openinbox.openInbox",
+      "typeVersion": 1,
+      "position": [-240, 720],
+      "credentials": {
+        "openInboxApi": {
+          "id": "REPLACE_WITH_YOUR_CRED_ID",
+          "name": "OpenInbox account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "webhook",
+        "operation": "delete",
+        "webhookId": "={{ $('Webhook: Create').item.json.id }}"
+      },
+      "id": "00000000-0000-0000-0000-000000000023",
+      "name": "Webhook: Delete",
+      "type": "n8n-nodes-openinbox.openInbox",
+      "typeVersion": 1,
+      "position": [0, 720],
+      "credentials": {
+        "openInboxApi": {
+          "id": "REPLACE_WITH_YOUR_CRED_ID",
+          "name": "OpenInbox account"
+        }
+      }
+    },
+
+    {
+      "parameters": {
+        "events": ["email.received", "inbox.created", "inbox.expired"]
+      },
+      "id": "00000000-0000-0000-0000-000000000040",
+      "name": "OpenInbox Trigger",
+      "type": "n8n-nodes-openinbox.openInboxTrigger",
+      "typeVersion": 1,
+      "position": [-720, 1240],
+      "credentials": {
+        "openInboxApi": {
+          "id": "REPLACE_WITH_YOUR_CRED_ID",
+          "name": "OpenInbox account"
+        }
+      },
+      "webhookId": "openinbox-trigger-demo"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Verify HMAC-SHA256 signature on the incoming OpenInbox webhook.\n// Signature header format: X-Webhook-Signature = \"t=<unix_ms>,v1=<hex_sha256>\"\n// Signed string: `${t}.${JSON.stringify(payload)}`\n// The OpenInbox Trigger node surfaces these headers as `__delivery` on the\n// item JSON (signature, event, deliveryId), not as raw HTTP headers.\n// Requires n8n to allow the `crypto` builtin: start n8n with\n//   NODE_FUNCTION_ALLOW_BUILTIN=crypto\nconst crypto = require('crypto');\n\nconst SECRET = $env.OPENINBOX_WEBHOOK_SECRET || 'replace-with-your-webhook-secret';\n\nconst input = $input.first().json;\nconst delivery = input.__delivery || {};\nconst sigHeader = delivery.signature;\nconst event = delivery.event;\nconst deliveryId = delivery.deliveryId;\n\nif (!sigHeader) {\n  throw new Error('Missing signature on __delivery — is this item from the OpenInbox Trigger node?');\n}\n\nconst parts = Object.fromEntries(sigHeader.split(',').map(p => p.split('=')));\nconst t = parts.t;\nconst v1 = parts.v1;\n\nif (!t || !v1) {\n  throw new Error(`Malformed signature header: ${sigHeader}`);\n}\n\n// Strip the helper field before re-serialising the body for HMAC.\nconst body = { ...input };\ndelete body.__delivery;\n\nconst signed = `${t}.${JSON.stringify(body)}`;\nconst expected = crypto.createHmac('sha256', SECRET).update(signed).digest('hex');\n\nconst expectedBuf = Buffer.from(expected, 'hex');\nconst receivedBuf = Buffer.from(v1, 'hex');\nconst valid =\n  expectedBuf.length === receivedBuf.length &&\n  crypto.timingSafeEqual(expectedBuf, receivedBuf);\n\nreturn [{\n  json: {\n    valid,\n    event,\n    deliveryId,\n    timestamp: t,\n    payload: body,\n  },\n}];\n"
+      },
+      "id": "00000000-0000-0000-0000-000000000041",
+      "name": "Verify HMAC Signature",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [-480, 1240]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.valid }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        }
+      },
+      "id": "00000000-0000-0000-0000-000000000042",
+      "name": "If signature valid",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [-240, 1240]
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.event }}",
+                    "rightValue": "email.received",
+                    "operator": { "type": "string", "operation": "equals" }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "email.received"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.event }}",
+                    "rightValue": "inbox.created",
+                    "operator": { "type": "string", "operation": "equals" }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "inbox.created"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.event }}",
+                    "rightValue": "inbox.expired",
+                    "operator": { "type": "string", "operation": "equals" }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "inbox.expired"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "00000000-0000-0000-0000-000000000043",
+      "name": "Switch by event",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3,
+      "position": [0, 1240]
+    },
+    {
+      "parameters": {
+        "resource": "email",
+        "operation": "get",
+        "emailId": "={{ $json.payload.data.emailId }}"
+      },
+      "id": "00000000-0000-0000-0000-000000000044",
+      "name": "Email: Get (full body)",
+      "type": "n8n-nodes-openinbox.openInbox",
+      "typeVersion": 1,
+      "position": [240, 1140],
+      "credentials": {
+        "openInboxApi": {
+          "id": "REPLACE_WITH_YOUR_CRED_ID",
+          "name": "OpenInbox account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Extract a 4-8 digit OTP / verification code from the email body.\nconst e = $input.first().json;\nconst text = (e.text_body || e.textBody || '') + '\\n' + (e.html_body || e.htmlBody || '');\nconst m = text.match(/\\b(\\d{4,8})\\b/);\nreturn [{\n  json: {\n    emailId: e.id,\n    from: e.from,\n    subject: e.subject,\n    otp: m ? m[1] : null,\n    receivedAt: e.received_at || e.receivedAt,\n  },\n}];\n"
+      },
+      "id": "00000000-0000-0000-0000-000000000045",
+      "name": "Extract OTP",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [480, 1140]
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            { "name": "event", "value": "inbox.created" },
+            {
+              "name": "summary",
+              "value": "=New inbox {{ $json.payload.data.email }} created"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "00000000-0000-0000-0000-000000000046",
+      "name": "Handle inbox.created",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3,
+      "position": [240, 1280]
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            { "name": "event", "value": "inbox.expired" },
+            {
+              "name": "summary",
+              "value": "=Inbox {{ $json.payload.data.inboxId }} expired"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "00000000-0000-0000-0000-000000000047",
+      "name": "Handle inbox.expired",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3,
+      "position": [240, 1420]
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "error",
+              "value": "Invalid HMAC signature - possible spoofed payload"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "00000000-0000-0000-0000-000000000048",
+      "name": "Reject (bad signature)",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3,
+      "position": [0, 1400]
+    }
+  ],
+  "connections": {
+    "Manual Trigger (CRUD demo)": {
+      "main": [[{ "node": "Account: Get", "type": "main", "index": 0 }]]
+    },
+    "Account: Get": {
+      "main": [[{ "node": "Inbox: Create", "type": "main", "index": 0 }]]
+    },
+    "Inbox: Create": {
+      "main": [[{ "node": "Inbox: Get", "type": "main", "index": 0 }]]
+    },
+    "Inbox: Get": {
+      "main": [[{ "node": "Inbox: Get Many", "type": "main", "index": 0 }]]
+    },
+    "Inbox: Get Many": {
+      "main": [
+        [{ "node": "Wait 60s (send email now)", "type": "main", "index": 0 }]
+      ]
+    },
+    "Wait 60s (send email now)": {
+      "main": [[{ "node": "Email: Get Many", "type": "main", "index": 0 }]]
+    },
+    "Email: Get Many": {
+      "main": [[{ "node": "Email: Get", "type": "main", "index": 0 }]]
+    },
+    "Email: Get": {
+      "main": [[{ "node": "Email: Delete", "type": "main", "index": 0 }]]
+    },
+    "Email: Delete": {
+      "main": [[{ "node": "Inbox: Delete", "type": "main", "index": 0 }]]
+    },
+
+    "Manual Trigger (Webhook demo)": {
+      "main": [[{ "node": "Webhook: Create", "type": "main", "index": 0 }]]
+    },
+    "Webhook: Create": {
+      "main": [[{ "node": "Webhook: Get Many", "type": "main", "index": 0 }]]
+    },
+    "Webhook: Get Many": {
+      "main": [[{ "node": "Webhook: Delete", "type": "main", "index": 0 }]]
+    },
+
+    "OpenInbox Trigger": {
+      "main": [
+        [{ "node": "Verify HMAC Signature", "type": "main", "index": 0 }]
+      ]
+    },
+    "Verify HMAC Signature": {
+      "main": [[{ "node": "If signature valid", "type": "main", "index": 0 }]]
+    },
+    "If signature valid": {
+      "main": [
+        [{ "node": "Switch by event", "type": "main", "index": 0 }],
+        [{ "node": "Reject (bad signature)", "type": "main", "index": 0 }]
+      ]
+    },
+    "Switch by event": {
+      "main": [
+        [{ "node": "Email: Get (full body)", "type": "main", "index": 0 }],
+        [{ "node": "Handle inbox.created", "type": "main", "index": 0 }],
+        [{ "node": "Handle inbox.expired", "type": "main", "index": 0 }]
+      ]
+    },
+    "Email: Get (full body)": {
+      "main": [[{ "node": "Extract OTP", "type": "main", "index": 0 }]]
+    }
+  },
+  "settings": { "executionOrder": "v1" },
+  "pinData": {},
+  "tags": [{ "name": "openinbox" }, { "name": "demo" }]
+}

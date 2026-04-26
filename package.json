@@ -1,0 +1,68 @@
+{
+  "name": "n8n-nodes-openinbox",
+  "version": "1.0.0",
+  "description": "n8n community nodes for OpenInbox disposable email API",
+  "license": "MIT",
+  "homepage": "https://openinbox.io",
+  "author": {
+    "name": "OpenInbox",
+    "url": "https://openinbox.io"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/openinbox-io/n8n-nodes-openinbox.git"
+  },
+  "bugs": {
+    "url": "https://github.com/openinbox-io/n8n-nodes-openinbox/issues"
+  },
+  "keywords": [
+    "n8n-community-node-package",
+    "n8n",
+    "openinbox",
+    "temp-email",
+    "disposable-email",
+    "email"
+  ],
+  "main": "index.js",
+  "files": [
+    "dist",
+    "index.js",
+    "LICENSE.md",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=18.10"
+  },
+  "scripts": {
+    "build": "rm -rf dist && tsc && copyfiles \"nodes/**/*.svg\" dist/",
+    "dev": "tsc --watch",
+    "format": "prettier nodes credentials --write",
+    "lint": "eslint nodes credentials package.json",
+    "lintfix": "eslint nodes credentials package.json --fix",
+    "prepublishOnly": "npm run build && npm run lint -s"
+  },
+  "n8n": {
+    "n8nNodesApiVersion": 1,
+    "credentials": [
+      "dist/credentials/OpenInboxApi.credentials.js"
+    ],
+    "nodes": [
+      "dist/nodes/OpenInbox/OpenInbox.node.js",
+      "dist/nodes/OpenInbox/OpenInboxTrigger.node.js"
+    ]
+  },
+  "devDependencies": {
+    "@types/node": "^18.0.0",
+    "@typescript-eslint/parser": "^7.15.0",
+    "copyfiles": "^2.4.1",
+    "eslint": "^8.57.0",
+    "eslint-plugin-n8n-nodes-base": "^1.16.3",
+    "jsonc-eslint-parser": "^3.1.0",
+    "n8n-workflow": "*",
+    "prettier": "^3.3.2",
+    "typescript": "^5.0.0"
+  },
+  "peerDependencies": {
+    "n8n-workflow": "*"
+  }
+}
