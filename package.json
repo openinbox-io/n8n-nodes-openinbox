@@ -1,11 +1,12 @@
 {
   "name": "n8n-nodes-openinbox",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "n8n community nodes for OpenInbox disposable email API",
   "license": "MIT",
   "homepage": "https://openinbox.io",
   "author": {
     "name": "OpenInbox",
+    "email": "support@openinbox.io",
     "url": "https://openinbox.io"
   },
   "repository": {
