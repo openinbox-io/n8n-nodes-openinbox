@@ -39,7 +39,13 @@ jobs:
           registry-url: 'https://registry.npmjs.org'
 
       - name: Install dependencies
-        run: npm ci
+        # `--ignore-scripts` skips native postinstall builds (notably
+        # `isolated-vm`, pulled in transitively by `n8n-workflow`). That
+        # package fails to compile against Node 20.20+ V8 headers
+        # (v8::SourceLocation API change) and we don't need it: this
+        # package only consumes `n8n-workflow` for types, lint, and the
+        # smoke test — never executing n8n's sandbox at build time.
+        run: npm ci --ignore-scripts
 
       - name: Run tests (lint + build + smoke)
         run: npm test
