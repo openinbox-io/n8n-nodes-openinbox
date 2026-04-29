@@ -1,6 +1,6 @@
 {
   "name": "n8n-nodes-openinbox",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "n8n community nodes for OpenInbox disposable email API",
   "license": "MIT",
   "homepage": "https://openinbox.io",
@@ -66,5 +66,9 @@
   },
   "peerDependencies": {
     "n8n-workflow": "*"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
   }
 }

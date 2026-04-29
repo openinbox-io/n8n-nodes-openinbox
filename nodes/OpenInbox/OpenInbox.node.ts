@@ -9,10 +9,7 @@ import {
 
 import { openInboxApiRequest } from './GenericFunctions';
 
-import {
-  OPENINBOX_DEFAULT_BASE_URL,
-  OPENINBOX_SUPPORTED_EVENTS,
-} from './constants';
+import { OPENINBOX_SUPPORTED_EVENTS } from './constants';
 
 /**
  * OpenInbox main node.
@@ -52,9 +49,6 @@ export class OpenInbox implements INodeType {
         required: true,
       },
     ],
-    requestDefaults: {
-      baseURL: OPENINBOX_DEFAULT_BASE_URL,
-    },
     properties: [
       // =====================================================
       // Resource
@@ -277,7 +271,8 @@ export class OpenInbox implements INodeType {
             operation: ['getAll'],
           },
         },
-        description: 'Whether to return all results or only up to a given limit',
+        description:
+          'Whether to return all results or only up to a given limit',
       },
       {
         displayName: 'Limit',
