@@ -36,8 +36,8 @@ After installation, two nodes become available:
 
 Create an **OpenInbox API** credential and set:
 
-- **API Key** — generate one from your OpenInbox dashboard at https://openinbox.io. Pro / Business / 7-Day Pass tiers are required for API access.
-- **Base URL** — defaults to `https://api.openinbox.io`. Only override if you self-host. The `/api/v1` path is appended automatically.
+- **API Key** — generate one from your OpenInbox dashboard at https://openinbox.io. Pro / Business / 7-Day Pass tiers are required for API access. (**7 days free trial is available**)
+- **Base URL** — defaults to `https://api.openinbox.io`.
 
 The key is sent as the `X-API-Key` request header.
 
