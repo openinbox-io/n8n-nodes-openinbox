@@ -1,5 +1,8 @@
 # n8n-nodes-openinbox
 
+# n8n-nodes-openinbox
+
+[![n8n community node](https://img.shields.io/badge/n8n-community%20node-orange.svg)](https://www.npmjs.com/package/n8n-nodes-openinbox)
 [![npm version](https://img.shields.io/npm/v/n8n-nodes-openinbox.svg)](https://www.npmjs.com/package/n8n-nodes-openinbox)
 [![npm downloads](https://img.shields.io/npm/dm/n8n-nodes-openinbox.svg)](https://www.npmjs.com/package/n8n-nodes-openinbox)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE.md)
@@ -36,8 +39,7 @@ After installation, two nodes become available:
 
 Create an **OpenInbox API** credential and set:
 
-- **API Key** — generate one from your OpenInbox dashboard at https://openinbox.io. Pro / Business / 7-Day Pass tiers are required for API access. (**7 days free trial is available**)
-- **Base URL** — defaults to `https://api.openinbox.io`.
+- **API Key** — generate one from your OpenInbox dashboard at https://openinbox.io. Pro / Business / 7-Day Pass tiers are required for API access. **Pro plan includes a 7-day free trial — [start free at openinbox.io](https://openinbox.io/pricing).**
 
 The key is sent as the `X-API-Key` request header.
 
