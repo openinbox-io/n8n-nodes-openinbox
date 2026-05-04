@@ -33,7 +33,7 @@ export class OpenInbox implements INodeType {
   description: INodeTypeDescription = {
     displayName: 'OpenInbox',
     name: 'openInbox',
-    icon: 'file:openinbox.png',
+    icon: 'file:openinbox.svg',
     group: ['transform'],
     version: 1,
     subtitle: '={{$parameter["operation"] + ": " + $parameter["resource"]}}',
