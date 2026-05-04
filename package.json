@@ -35,7 +35,7 @@
     "node": ">=18.10"
   },
   "scripts": {
-    "build": "rm -rf dist && tsc && copyfiles \"nodes/**/*.svg\" dist/",
+    "build": "rm -rf dist && tsc && copyfiles \"nodes/**/*.{svg,png}\" dist/",
     "dev": "tsc --watch",
     "format": "prettier nodes credentials --write",
     "lint": "eslint nodes credentials package.json",

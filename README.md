@@ -1,7 +1,6 @@
 # n8n-nodes-openinbox
 
-# n8n-nodes-openinbox
-
+[![n8n verified](https://img.shields.io/badge/n8n-verified%20node-blue.svg)](https://www.npmjs.com/package/n8n-nodes-openinbox)
 [![n8n community node](https://img.shields.io/badge/n8n-community%20node-orange.svg)](https://www.npmjs.com/package/n8n-nodes-openinbox)
 [![npm version](https://img.shields.io/npm/v/n8n-nodes-openinbox.svg)](https://www.npmjs.com/package/n8n-nodes-openinbox)
 [![npm downloads](https://img.shields.io/npm/dm/n8n-nodes-openinbox.svg)](https://www.npmjs.com/package/n8n-nodes-openinbox)
@@ -11,7 +10,13 @@ This is an [n8n community node](https://docs.n8n.io/integrations/community-nodes
 
 > OpenInbox is **receive-only** disposable email infrastructure. You can create inboxes on demand, list received messages, and subscribe to webhook events such as `email.received`.
 
-## Example workflow
+## Use Cases
+
+- **OTP & verification automation** — Create a disposable inbox, trigger a signup flow, and extract the 6-digit code automatically.
+- **Email integration testing** — Test your transactional email pipelines without polluting real inboxes.
+- **Signup flow QA** — Spin up a fresh inbox per test run and verify confirmation emails end-to-end.
+
+## Example Workflow
 
 The repo ships with a complete demo workflow that:
 
@@ -26,9 +31,14 @@ Import [`examples/openinbox-full-demo.workflow.json`](./examples/openinbox-full-
 
 ## Installation
 
-1. In n8n, go to **Settings → Community Nodes**.
+**n8n Cloud (verified node):** Search for `OpenInbox` directly in the node picker on the canvas — no settings required. Just drag it into your workflow.
+
+**Self-hosted / manual:**
+
+1. Go to **Settings → Community Nodes**.
 2. Click **Install**.
 3. Enter `n8n-nodes-openinbox` and confirm.
+4. Make sure **Verified Community Nodes** is enabled in your Admin Panel (you may need to restart your instance).
 
 After installation, two nodes become available:
 
@@ -39,7 +49,7 @@ After installation, two nodes become available:
 
 Create an **OpenInbox API** credential and set:
 
-- **API Key** — generate one from your OpenInbox dashboard at https://openinbox.io. Pro / Business / 7-Day Pass tiers are required for API access. **Pro plan includes a 7-day free trial — [start free at openinbox.io](https://openinbox.io/pricing).**
+- **API Key** — generate one from your OpenInbox dashboard at https://openinbox.io. API access is available on Pro, Business, and 7-Day Pass tiers. **Pro plan includes a 7-day free trial — [start free at openinbox.io](https://openinbox.io/pricing).**
 
 The key is sent as the `X-API-Key` request header.
 
@@ -76,7 +86,7 @@ The key is sent as the `X-API-Key` request header.
 | --------- | ----- | ----------------- | ---------------------------------------- |
 | Get       | `GET` | `/api/v1/account` | Get tier, rate limits and current usage. |
 
-## Trigger node
+## Trigger Node
 
 The **OpenInbox Trigger** automatically registers a webhook with OpenInbox when the workflow activates and removes it when the workflow deactivates.
 
@@ -88,7 +98,7 @@ The **OpenInbox Trigger** automatically registers a webhook with OpenInbox when 
    - `email.received` — fires for every email delivered to any of your inboxes.
    - `inbox.created`
    - `inbox.expired`
-4. **Activate** the workflow. n8n will call `POST /api/v1/webhooks` with the workflow’s public webhook URL. Deactivating calls `DELETE /api/v1/webhooks/:id`.
+4. **Activate** the workflow. n8n will call `POST /api/v1/webhooks` with the workflow's public webhook URL. Deactivating calls `DELETE /api/v1/webhooks/:id`.
 
 ### Payload
 
@@ -109,7 +119,7 @@ OpenInbox delivers JSON like this:
 
 The trigger forwards this body verbatim, plus a `__delivery` object containing the `X-Webhook-Signature`, `X-Webhook-Event`, and `X-Webhook-Delivery` headers so you can verify the HMAC-SHA256 signature against your webhook secret.
 
-### Signature format
+### Signature Format
 
 ```
 X-Webhook-Signature: t=<timestamp>,v1=<hex_sha256>

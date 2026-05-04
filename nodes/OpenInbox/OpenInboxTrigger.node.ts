@@ -44,7 +44,7 @@ export class OpenInboxTrigger implements INodeType {
   description: INodeTypeDescription = {
     displayName: 'OpenInbox Trigger',
     name: 'openInboxTrigger',
-    icon: 'file:openinbox.svg',
+    icon: 'file:openinbox.png',
     group: ['trigger'],
     version: 1,
     subtitle: '={{$parameter["events"].join(", ")}}',
